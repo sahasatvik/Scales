@@ -15,6 +15,7 @@ public class Main extends Application {
         Scene scene = new Scene(root, 300, 275);
         scene.getStylesheets().add("resources/css/jfoenix-fonts.css");
         scene.getStylesheets().add("resources/css/jfoenix-design.css");
+        primaryStage.setMinWidth(475);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
