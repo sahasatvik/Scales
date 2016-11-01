@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="Scales:jar">
+    <output-path>$PROJECT_DIR$/</output-path>
+    <root id="root">
+      <element id="archive" name="Scales.jar">
+        <element id="module-output" name="Scales" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="file-copy" path="$PROJECT_DIR$/jfoenix.jar" />
+      </element>
+    </root>
+  </artifact>
+</component>
