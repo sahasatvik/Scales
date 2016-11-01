@@ -29,7 +29,7 @@ public class Scales {
             @Override
             public String toString(Double object) {
                 int i = (int) (Double.parseDouble(object.toString()));
-                if(i > 0 && 1 <= 12) return keys[i];
+                if(i > 0 && i <= 12) return keys[i];
                 return keys[1];
             }
 

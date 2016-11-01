@@ -4,12 +4,14 @@ import javax.sound.midi.*;
 
 /**
  * The ScaleGenerator class plays the notes of the input scale type with the root note and instrument of the user's choice.
- * The scale is played both in ascending and descending order with a difference of four beats between each note
- * It takes all the necessary input values from the GUI Class
+ * The scale is played both in ascending and descending order with a difference of four beats between each note.
+ *
+ * This code has been modified by Satvik Saha, for use in the Scales wrapper which provides a Material Design compliant
+ * User Interface.
  *
  * @author Suprit Behera
- * @version 1.0
- * Created on 31/10/2016 
+ * @version 1.1
+ * Created on 1/11/2016
  *
  */
 
@@ -18,22 +20,18 @@ public class ScaleGenerator {
         int rootNote = numericValueOfRootNote(note, octave);
         int scaleNumber = numericValueOfScaleType(scaleType);
         int instrument = instrumentNumber;
-        int numberOfNotes = getNumberOfNotes(scaleNumber); // Store the number of notes in the required scale
+        int numberOfNotes = getNumberOfNotes(scaleNumber);
         if (numberOfNotes == -1)
-            //getNumberOfNotes(int) returns -1 if input scale type number does not match.
             System.err.println("Wrong Scale Input");
         else
             run(rootNote,scaleNumber,numberOfNotes,instrument);
     }
 
-    // Function to generate a note given the attributes associated to it.
     public static MidiEvent makeEvent(int comd, int chan, int one, int two, int tick) {
         MidiEvent event = null;
         try {
             ShortMessage a = new ShortMessage();
             a.setMessage(comd, chan, one, two);
-            // comd (command), for eg. 144 for note on, 128 for note off, 172 for changing instrument, etc.; chan(channel)
-            // one and two depend on the command type. Tick is the beat number when the note is played.
             event = new MidiEvent(a,tick);
         } catch (Exception ex) {
 
@@ -46,45 +44,39 @@ public class ScaleGenerator {
             Sequencer sequencer = MidiSystem.getSequencer();
             sequencer.open();
 
-            Sequence seq = new Sequence(Sequence.PPQ,4); // A sequencer runs numerous sequences.
-            Track track = seq.createTrack(); // A Sequence is made up of numerous tracks.
-            int note = rootNote; // Because rootNote is just the relative position of the note to Middle C.
+            Sequence seq = new Sequence(Sequence.PPQ,4);
+            Track track = seq.createTrack();
+            int note = rootNote;
             int limit = (numberOfNotes - 1) * 4;
-            // (numberOfNotes - 1) because looping starts from i (counter variable) = 0.
-            //  It is multiplied by 4 i increases by 4 each iteration.
-            int finalNote = -1; // Initialization. finalNote stores the value of the last note in a scale.
-            int beat = -1;// Initialization
+            int finalNote = -1;
+            int beat = -1;
 
-            for (int i = 0; i <= limit; i+=4) { // Loop for playing the ascending scale.
+            for (int i = 0; i <= limit; i+=4) {
                 beat = beat + 4;
                 note = callCorrectMethod(i, note, scaleNumber);
-                track.add(makeEvent(192,1,instrument,0,beat)); // Set instrument
-                track.add(makeEvent(144,1,note,100,beat)); // Play the note.
-                track.add(makeEvent(128,1,note,100,beat+2)); // Stop playing the note.
+                track.add(makeEvent(192,1,instrument,0,beat));
+                track.add(makeEvent(144,1,note,100,beat));
+                track.add(makeEvent(128,1,note,100,beat+2));
                 if (i == limit)
-                    finalNote = note; // In the last iteration, note will contain the value of the last note of the scale.
+                    finalNote = note;
             }
 
-            int startingNote = finalNote; // In descending scale, the first note played is the last note of the scale.
-            //System.out.println(startingNote); // For testing purposes.
-            for (int j = limit; j >= 4; j-=4) { // Loop for playing the descending scale
+            int startingNote = finalNote;
+            for (int j = limit; j >= 4; j-=4) {
                 beat = beat + 4;
                 startingNote = startingNote + (startingNote - callCorrectMethod(j, startingNote, scaleNumber));
-                // callCorrectMethod returns (note + some int).
-                //In descending scale, the value of the next note should be lower than the previous one.
 
-                track.add(makeEvent(192,1,instrument,0,beat)); // Set instrument
-                track.add(makeEvent(144,1,startingNote,100,beat)); // Play the note.
-                track.add(makeEvent(128,1,startingNote,100,beat+2)); // Stop playing the note.
+                track.add(makeEvent(192,1,instrument,0,beat));
+                track.add(makeEvent(144,1,startingNote,100,beat));
+                track.add(makeEvent(128,1,startingNote,100,beat+2));
             }
 
             sequencer.setSequence(seq);
             sequencer.start();
-            // Set the BPM (Beats Per Minute) while determines the speed with which it is played.
             sequencer.setTempoInBPM(120);
         } catch(Exception ex) {
 
-        };
+        }
     }
 
     public int numericValueOfRootNote(String rootName,int octaveNumber){
@@ -156,7 +148,7 @@ public class ScaleGenerator {
 
     }
 
-    public int getNumberOfNotes(int scaleNumber) { // returns the number of notes in the specific input scale type
+    public int getNumberOfNotes(int scaleNumber) {
         if (scaleNumber <= 10)
             return 8;
         if (scaleNumber == 11 || scaleNumber == 14)
@@ -167,8 +159,6 @@ public class ScaleGenerator {
             return 9;
         return -1;
     }
-
-    // call the required function according to the scale type input.
     public static int callCorrectMethod(int count,int note, int scaleNumber) {
         if (scaleNumber == 1)
             note = getNextMajorNote(count,note);
